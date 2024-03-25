@@ -8,7 +8,8 @@ export default function App() {
 
   const img = require('./resources/bg.jpg');
 
-  const [modal,setModal] = useState(true);
+  const [modal,setModal] = useState(false);
+  const [newTask, setNewTask] = useState('')
 
   const [tasks, setTasks] = useState([
     {
@@ -32,6 +33,38 @@ export default function App() {
     );
   }
 
+
+  function ModalView(){
+    return(
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modal}
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+        }}
+      >
+
+        <View style={styles.centeredView}>
+
+          <View style={styles.modalView}>
+
+            <TextInput autoFocus={true} value={newTask} editable onChangeText={(text) => {setNewTask(text)}}></TextInput>
+
+            <TouchableHighlight
+              style={{ ...styles.openButton, backgroundColor: "#2196F3" }}
+              onPress={() => {
+                addInList();
+              }}
+            >
+              <Text style={styles.textStyle}>Adicionar Tarefa</Text>
+            </TouchableHighlight>
+          </View>
+        </View>
+      </Modal>
+    );
+  }
+
   function deleteItem(posicion){
     alert(posicion)
 
@@ -40,6 +73,16 @@ export default function App() {
     })
 
     setTasks(newTasks);
+  }
+
+  function addInList(){
+    setModal(!modal);
+    id = 0;
+    if(tasks.length > 0){
+      id = tasks[tasks.length-1].id + 1
+    }
+    let obj = {id: id, task: newTask}
+    setTasks([...tasks, obj]) 
   }
 
   function ComponentList(props){
@@ -59,29 +102,7 @@ export default function App() {
   return (
     <ScrollView style={styles.body}>
       <Header></Header>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modal}
-        onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
-        }}
-      >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <TextInput autoFocus={true}></TextInput>
-
-            <TouchableHighlight
-              style={{ ...styles.openButton, backgroundColor: "#2196F3" }}
-              onPress={() => {
-                setModal(!modal);
-              }}
-            >
-              <Text style={styles.textStyle}>Adicionar Tarefa</Text>
-            </TouchableHighlight>
-          </View>
-        </View>
-      </Modal>
+      <ModalView></ModalView>
       {
 
         tasks.map(function(val){      
@@ -89,6 +110,10 @@ export default function App() {
         })
 
       }
+
+      <TouchableOpacity style={styles.addTask} onPress={() => setModal(!modal)}>
+        <Text style={styles.addTaskText}>Adicionar Tarefa</Text>
+      </TouchableOpacity>
 
     </ScrollView>
   );
@@ -121,6 +146,20 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 10,
     alignItems: 'center'
+  },
+  addTask: {
+    padding: 15,
+    textAlign: 'center',
+    backgroundColor: 'gray',
+    marginTop: 14,
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    borderRadius: 9
+  },
+  addTaskText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16
   },
   //Estilos para nossa modal
   centeredView: {
